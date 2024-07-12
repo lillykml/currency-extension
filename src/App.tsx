@@ -30,17 +30,16 @@ function App() {
         <Box style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
           <IconButton onClick={()=>window.close()} size='small'><CloseIcon /></IconButton>
         </Box>
-      <div>
         <img src="/icon512.png" className="logo" alt="Currency converter logo" />
-      </div>
-      <Typography variant="h3" style={{ marginBottom: "0.5em" }}>
-          Currency Converter
+        <Typography variant="h3" style={{ marginBottom: "0.5em" }}>
+            Currency Converter
         </Typography>
-      <div className="card">
+      <Box sx={{ '& .MuiTextField-root': { m: 1, width: '130px' } }}>
         <form onSubmit={convert}>
           <div>
             <TextField 
               label="Amount" 
+              size="small"
               variant="outlined" 
               type="number" value={amount} 
               onChange={(e) => {
@@ -49,9 +48,10 @@ function App() {
               }}/>
             <TextField
               select
+              size="small"
               label="Select"
               value={origin}
-              helperText="Please select your original currency"
+              helperText="Original currency"
               onChange={(e) => setOrigin(e.target.value)}
             >
               {currencies && currencies.map((currency) => (
@@ -63,12 +63,13 @@ function App() {
           </div>
           <div>
           <TextField
-              select
-              label="Select"
-              value={target}
-              helperText="Please select your target currency"
-              onChange={(e) => setTarget(e.target.value)}
-            >
+            size="small"
+            select
+            label="Select"
+            value={target}
+            helperText="Target currency"
+            onChange={(e) => setTarget(e.target.value)}
+          >
               {currencies && currencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}
@@ -76,10 +77,10 @@ function App() {
               ))}
             </TextField>
           </div>
-          <Button type='submit' >Convert</Button  >
+          <Button type='submit'>Convert</Button>
         </form>
-        {result && <p>{result}</p>}
-      </div>
+        {result && <Typography variant='body1'>{result}</Typography>}
+      </Box>
       </Box>
     </div>
   );
