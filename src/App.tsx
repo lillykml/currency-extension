@@ -4,9 +4,9 @@ import currencyService from './services/converter';
 
 function App() {
   const [currencies, setCurrencies] = useState<string[] | undefined>(undefined);
-  const [amount, setAmount] = useState<number | undefined >(undefined);
-  const [origin, setOrigin] = useState<string | undefined>(undefined);
-  const [target, setTarget] = useState<string | undefined>(undefined);
+  const [amount, setAmount] = useState<number>(0);
+  const [origin, setOrigin] = useState<string>('EUR');
+  const [target, setTarget] = useState<string>('USD');
   const [result, setResult] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -15,10 +15,11 @@ function App() {
 
   const convert = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    setResult(`Converting ${amount} ${origin} to ${target}`)
-    setAmount(undefined);
-    setOrigin('');
-    setTarget('');
+    if (amount && origin && target) {
+      currencyService.convert(amount, origin, target).then(response => {
+        setResult(`${String(response)} ${target}`);
+      })
+    }
   }
 
   return (
@@ -37,7 +38,7 @@ function App() {
             value={amount} 
             onChange={(e) => {
               const value = e.target.value;
-              setAmount(value ? parseFloat(value) : undefined);
+              setAmount(value ? parseFloat(value) : 0);
               }
             }/>
           </div>
