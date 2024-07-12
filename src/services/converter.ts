@@ -1,19 +1,50 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
-const baseUrl:string = 'https://api.currencyapi.com/v3';
-const apiKey = 'your_api_key';
+const baseUrl: string = 'https://api.currencyapi.com/v3';
+const apiKey: string = 'your_api_key';
 
-const getCurrencies = async () => {
-    const response = await axios.get(`${baseUrl}/currencies?apikey=${apiKey}`);
-    const currencies =  response.data.data;
-    return Object.keys(currencies);
+
+interface CurrenciesResponse {
+    data: {
+        [key: string]: {
+            code: string;
+            name: string;
+        };
+    };
+}
+
+interface ConversionResponse {
+    data: {
+        [key: string]: {
+            value: number;
+        };
+    };
+}
+
+const getCurrencies = async (): Promise<string[]> => {
+    try {
+        const response: AxiosResponse<CurrenciesResponse> = await axios.get(`${baseUrl}/currencies?apikey=${apiKey}`);
+        const currencies = response.data.data;
+        return Object.keys(currencies);
+    } catch (error) {
+        console.error('Error fetching currencies:', error);
+        return [];
+    }
 };
 
-const convert = async (amount: number, origin: string, target: string) => {
-    const response = await axios.get(`${baseUrl}/latest?apikey=${apiKey}&currencies=${target}&base_currency=${origin}`);
-    const rate = response.data.data[target].value;
-    console.log(rate);
-    return (amount * rate).toFixed(2);
+const convert = async (amount: number, origin: string, target: string): Promise<string> => {
+    try {
+        const response: AxiosResponse<ConversionResponse> = await axios.get(`${baseUrl}/latest?apikey=${apiKey}&currencies=${target}&base_currency=${origin}`);
+        const rate = response.data.data[target]?.value;
+        if (rate === undefined) {
+            throw new Error(`Conversion rate for ${target} not found`);
+        }
+        console.log(rate);
+        return (amount * rate).toFixed(2);
+    } catch (error) {
+        console.error('Error converting currency:', error);
+        return '0.00';
+    }
 };
 
 export default { getCurrencies, convert };
