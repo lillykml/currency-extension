@@ -1,11 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
+import currencyService from './services/converter';
 
 function App() {
+  const [currencies, setCurrencies] = useState<string[] | undefined>(undefined);
   const [amount, setAmount] = useState<number | undefined >(undefined);
   const [origin, setOrigin] = useState<string | undefined>(undefined);
   const [target, setTarget] = useState<string | undefined>(undefined);
   const [result, setResult] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    currencyService.getCurrencies().then(currencyCodes => setCurrencies(currencyCodes));
+  }, []);
 
   const convert = (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -37,11 +43,23 @@ function App() {
           </div>
           <div>
             <label>Original Currency</label>
-            <input type='text' value={origin} onChange={(e) => setOrigin(e.target.value)}/>
+            <select value={origin} onChange={(e) => setOrigin(e.target.value)}>
+              {currencies && currencies.map(currency => (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label>Target Currency</label>
-            <input type='text' value={target} onChange={(e) => setTarget(e.target.value)}/>
+            <select value={target} onChange={(e) => setTarget(e.target.value)}>
+              {currencies && currencies.map(currency => (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              ))}
+            </select>
           </div>
           <button type='submit'>Convert</button>
         </form>
