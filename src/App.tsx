@@ -15,12 +15,27 @@ function App() {
     currencyService.getCurrencies().then(currencyCodes => setCurrencies(currencyCodes));
   }, []);
 
-  const convert = (event: React.SyntheticEvent) => {
-    event.preventDefault();
+  const convert = () => {
     if (amount && origin && target) {
       currencyService.convert(amount, origin, target).then(response => {
         setResult(`${String(response)} ${target}`);
       });
+    }
+  };
+
+  const convertPage = () => {
+    alert('Convert on page');
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const nativeEvent = event.nativeEvent as SubmitEvent;
+    const submitter = nativeEvent.submitter as HTMLButtonElement;
+    const clickedButton = submitter.value;
+    if (clickedButton === 'ConvertAmount') {
+      convert();
+    } else if (clickedButton === 'ConvertPage') {
+      convertPage();
     }
   };
 
@@ -35,7 +50,7 @@ function App() {
             Currency Converter
         </Typography>
       <Box sx={{ '& .MuiTextField-root': { m: 1, width: '130px' } }}>
-        <form onSubmit={convert}>
+        <form onSubmit={handleSubmit}>
           <div>
             <TextField 
               label="Amount" 
@@ -77,7 +92,8 @@ function App() {
               ))}
             </TextField>
           </div>
-          <Button type='submit'>Convert</Button>
+          <Button type='submit' name="action" value="ConvertAmount">Convert</Button>
+          <Button type='submit' name="action" value="ConvertPage">Convert on Page</Button>
         </form>
         {result && <Typography variant='body1'>{result}</Typography>}
       </Box>
