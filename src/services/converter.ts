@@ -39,7 +39,6 @@ const convert = async (amount: number, origin: string, target: string): Promise<
         if (rate === undefined) {
             throw new Error(`Conversion rate for ${target} not found`);
         }
-        console.log(rate);
         return (amount * rate).toFixed(2);
     } catch (error) {
         console.error('Error converting currency:', error);
@@ -47,4 +46,18 @@ const convert = async (amount: number, origin: string, target: string): Promise<
     }
 };
 
-export default { getCurrencies, convert };
+const getRate = async (origin: string, target: string): Promise<number> => {
+    try {
+        const response: AxiosResponse<ConversionResponse> = await axios.get(`${baseUrl}/latest?apikey=${apiKey}&currencies=${target}&base_currency=${origin}`);
+        const rate = response.data.data[target]?.value;
+        if (rate === undefined) {
+            throw new Error(`Conversion rate for ${target} not found`);
+        }
+        return rate;
+    } catch (error) {
+        console.error('Error retrieving exchange rate:', error);
+        return 1;
+    }
+};
+
+export default { getCurrencies, convert, getRate };
