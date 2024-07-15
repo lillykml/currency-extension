@@ -23,8 +23,59 @@ function App() {
     }
   };
 
-  const convertPage = () => {
-    alert('Convert on page');
+  // const convertPage = async () => {
+  //   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  //   chrome.runtime.sendMessage({
+  //     type: 'CONVERT_CURRENCIES',
+  //     originCurrency: 'USD',  // Example value
+  //     targetCurrency: 'EUR'   // Example value
+  //   }, response => {
+  //     console.log(response?.status);
+  //   });
+  // };
+
+  const convertPage = async () => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id! },
+        func: () => {
+          // Function to recursively wrap text nodes
+          const wrapTextNodes = (node: Node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              const textNode = node as Text;
+              if (textNode.textContent) {
+                //Creates a new document fragment. A document fragment is a lightweight container for DOM elements, allowing safe manipulation without affecting the main DOM.
+                const fragment = document.createDocumentFragment();
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = textNode.textContent;
+  
+                // Replace text with styled (red) version
+                const regex = /(?<![\w\d])(\d+(\.\d+)?)(?=\s[A-Z]{3}(?![A-Z])|\s[$€£¥]|[^\w\d])/g;
+
+                const replacedHtml = tempDiv.innerHTML.replace(regex, (match) => {
+                  return `<span style="color: red;">${match}</span>`;
+                });
+  
+                // Append replaced content to fragment
+                fragment.appendChild(document.createRange().createContextualFragment(replacedHtml));
+  
+                // Replace the original text node with the new fragment content
+                textNode.parentNode?.replaceChild(fragment, textNode);
+              }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node as HTMLElement;
+              // Recursively process child nodes
+              element.childNodes.forEach(childNode => wrapTextNodes(childNode));
+            }
+          };
+          // Start processing from the document body
+          wrapTextNodes(document.body);
+        }
+      });
+    } catch (error) {
+      console.error("Error executing script:", error);
+    }
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
