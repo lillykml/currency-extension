@@ -1,11 +1,15 @@
-# Currency Converter
+# Currency Converter Chrome Extension
 
-This currency converter chrome extension allows you to convert every currency on the fly without leaving your current tab.
+## Purpose of the extension
+I'm sure you all know the problem of visiting a website abroad and seeing prices displayed in a currency you are not familiar with. This gives you a hard time estimating if something is expensive or not. This currency converter chrome extension allows you to convert every currency on the fly without leaving your current tab.
 
-## Set-Up
-1. Clone this repository
+## Getting started
+1. Clone this repository or download the source code.
 2. Run npm install to install all dependencies
-3. Signup and generate and API Key with https://currencyapi.com/
+3. Signup and generate an API Key with https://currencyapi.com/
 4. Replace the dummy value in converter.ts with your personal API key
 5. Run `npm run build` to build a production version of your chrome extension
-6. Open Google Chrome, go to extensions and click `load unpacked`and select your `dist` folder. 
+6. Navigate to **chrome://extensions/** in your browser
+7. Click `load unpacked` and and select the `dist` folder of this application.
+8. If you want the extension to be always available simply pin it in your browser
+9. Start using the extension!
